@@ -1,33 +1,47 @@
 //@flow
-
-const DEFAULTS = {
-  INITIAL_TICK_COUNT: 0,
-  TICK_INTERVAL: 100,
-  TICK_CAP: 24,
-  TICK_INCREMENT: 1
+type PropTypes = {
+  initialTickCount?: number,
+  tickInterval? : number,
+  tickCap?: number,
+  tickIncrement?: number,
+  onTick?: () => void,
+  onTickCap?: () => void
 }
 
-class TimeController {
+class Time<PropTypes> {
+
+  _props: Object
   tickCount: number
-  ticker: ?number
+  ticker: any
 
   start: Function
   incrementTickCount: Function
 
 
-  constructor (startVal?:number) {
-      if (startVal) {
-        this.tickCount = startVal
-      } else {
-        this.tickCount = DEFAULTS.INITIAL_TICK_COUNT
-      }
+  constructor (options: PropTypes) {
+
+    const defaults = {
+      initialTickCount: 0,
+      tickInterval: 100,
+      tickCap: 24,
+      tickIncrement: 1,
+      onTick: () => {},
+      onTickCap: () => {}
+    }
+
+    this._props = Object.assign(defaults, options)
+
+    this.tickCount = this._props.initialTickCount
+
+    this.start = this.start.bind(this)
+    this.incrementTickCount = this.incrementTickCount.bind(this)
   }
 
   /**
    * Starts the Ticker
    */
   start (): void {
-    this.ticker = setInterval(this.incrementTickCount, DEFAULTS.TICK_INTERVAL)
+    this.ticker = setInterval(this.incrementTickCount, this._props.tickInterval)
   }
 
   /**
@@ -36,6 +50,7 @@ class TimeController {
    * elapsed from the previous cycled, so it could be resumed.
    */
   pause (): void {
+    console.log('called')
     if (this.ticker)
       clearInterval(this.ticker)
   }
@@ -47,7 +62,7 @@ class TimeController {
    * resume would only be available for started & paused TimeControllers
    */
   resume (): void {
-    this.ticker = setInterval(this.incrementTickCount, DEFAULTS.TICK_INTERVAL)
+    this.ticker = setInterval(this.incrementTickCount, this._props.tickInterval)
   }
 
   /**
@@ -62,7 +77,8 @@ class TimeController {
    * Increments the Tick Count
    */
   incrementTickCount (): void {
-    this.tickCount += DEFAULTS.TICK_INCREMENT
+    this.tickCount += this._props.tickIncrement
+    this._props.onTick(this.tickCount)
   }
 
   /**
@@ -80,3 +96,5 @@ class TimeController {
     this.tickCount = val
   }
 }
+
+module.exports = Time

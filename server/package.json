@@ -21,6 +21,8 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "clear-console": "^1.1.0",
+    "flow-bin": "^0.77.0",
     "flow-remove-types": "^1.2.3",
     "nodemon": "^1.18.3",
     "rimraf": "^2.6.2"

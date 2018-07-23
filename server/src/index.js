@@ -1,12 +1,5 @@
 //@flow
-const TimeController = require('./libs/timeController.js')
+const clearConsole = require('clear-console')
+clearConsole()
 
-
-console.log('---------')
-console.log(TimeController.getTIckCount())
-console.log(TimeController.incrementTickCount())
-console.log(TimeController.getTIckCount())
-console.log(TimeController.incrementTickCount())
-console.log(TimeController.getTIckCount())
-TimeController.start()
-console.log(' ')
+const TimeController = require('./controllers/test.js')
