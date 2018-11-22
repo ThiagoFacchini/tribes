@@ -138,8 +138,9 @@ class World {
     const distancePerStep = Math.floor(this._tileSize / DEFAULT_VIEWPORT_MOVEMENT_STEPS)
 
     this._viewPortTempOffsetIterator = setInterval( ()=> {
-
-      if (this._viewPortMovementStepCount === DEFAULT_VIEWPORT_MOVEMENT_STEPS) {
+      // Substracting 1 from the amount of steps because the last iteration do represent
+      // the final position, therefore unecessary.
+      if (this._viewPortMovementStepCount === (DEFAULT_VIEWPORT_MOVEMENT_STEPS -1)) {
         clearInterval(this._viewPortTempOffsetIterator)
         this._viewPortMovementStepCount = 0
 
@@ -164,7 +165,7 @@ class World {
 
         this._viewPortMovementStepCount++
       }
-    }, (fnInterval -1))
+    }, fnInterval)
   }
 
 
@@ -230,8 +231,8 @@ class World {
   _getWorldRenderableCoords(): Object {
     let startRow, startCol, endRow, endCol
 
-    const startPosX = this._viewPortPositionX
-    const startPosY = this._viewPortPositionY
+    const startPosX = this._viewPortPositionX - DEFAULT_VIEWPORT_RENDER_OFFSET
+    const startPosY = this._viewPortPositionY - DEFAULT_VIEWPORT_RENDER_OFFSET
 
     const endPosX = (this._viewPortPositionX + this._viewPortMaxRows + DEFAULT_VIEWPORT_RENDER_OFFSET)
     const endPosY = (this._viewPortPositionY + this._viewPortMaxCols + DEFAULT_VIEWPORT_RENDER_OFFSET)
@@ -263,8 +264,13 @@ class World {
       for (let col = renderableCoord.startCol; col < renderableCoord.endCol; col++) {
         if (this._terrainLayer[row][col] != null) {
           const imageSource = this._terrainLayer[row][col]
-          const posX = (this._tileSize * rowCount) + this._viewPortTempOffsetX
-          const posY = (this._tileSize * colCount) + this._viewPortTempOffsetY
+
+          let posX = (this._tileSize * rowCount) + this._viewPortTempOffsetX
+          let posY = (this._tileSize * colCount) + this._viewPortTempOffsetY
+
+          if (this._viewPortPositionX >= DEFAULT_VIEWPORT_RENDER_OFFSET) posX -= (DEFAULT_VIEWPORT_RENDER_OFFSET * this._tileSize)
+          if (this._viewPortPositionY >= DEFAULT_VIEWPORT_RENDER_OFFSET) posY -= (DEFAULT_VIEWPORT_RENDER_OFFSET * this._tileSize)
+
           const sizeX = this._tileSize
           const sizeY = this._tileSize
 
@@ -364,7 +370,7 @@ class World {
 
     if (this._shouldDrawDebug) {
 
-      this.drawDebugInfo() 
+      this.drawDebugInfo()
       // Track FPS
       if ((performance.now() - this._lastRenderCall) > 1000) {
         this._framesPerSecond = this._frameCount
@@ -375,8 +381,6 @@ class World {
         this._frameCount++
       }
     }
-
-    window.requestAnimationFrame(() => this.draw())
   }
 
 
